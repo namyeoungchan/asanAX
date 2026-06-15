@@ -463,7 +463,33 @@
       </div>
     </section>
 
-    <!-- 11. STEP 5-A 깃 연동 -->
+    <!-- 11. 심화 · Actions Secrets로 가려지나 -->
+    <section class="slide" data-label="Actions Secrets?">
+      <div class="slide-inner">
+        <div class="section-tag mono reveal">DEEP DIVE · 자주 묻는 질문</div>
+        <h2 class="sec reveal">“GitHub Actions Secrets로는 가려지지 않나요?”</h2>
+        <p class="sec-lede reveal">좋은 질문이에요. 핵심은 ‘프레임워크냐 아니냐’가 아니라 <b>코드가 ‘서버에서 도느냐, 브라우저에서 도느냐’</b>입니다. 여기서 갈려요.</p>
+        <div class="safety reveal">
+          <div class="safe-card bad">
+            <span class="tag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6 6 18M6 6l12 12"/></svg> 정적 배포 · 노출</span>
+            <h4>브라우저에서 API를 부르는 경우</h4>
+            <p>GitHub Pages, React·Vue SPA, <span class="pill">next export</span>. 빌드 때 환경변수를 넣어도 <b>브라우저용 JS에 그대로 구워져</b> 노출됩니다.</p>
+            <p style="margin-top:9px;font-size:12.5px;color:var(--muted)"><span class="pill">NEXT_PUBLIC_</span> <span class="pill">VITE_</span> <span class="pill">REACT_APP_</span> 접두사 = ‘브라우저에 노출됨’ 표시예요.</p>
+          </div>
+          <div class="safe-card good">
+            <span class="tag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg> 서버 배포 · 숨김</span>
+            <h4>서버에서 API를 부르는 경우</h4>
+            <p>Next.js API·SSR(@Vercel), Cloudflare Workers, Netlify Functions. 키는 <b>서버 환경변수</b>에 남고 브라우저로 안 나가요. <b>여기선 Secrets가 진짜로 통합니다.</b></p>
+          </div>
+        </div>
+        <div class="callout tip reveal">
+          <div class="c-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 3h6c0-1 0-2 1-3a7 7 0 0 0-4-12z"/></svg></div>
+          <div><h5>이 한 줄만 기억하세요</h5><p><b>API 호출이 브라우저에서 일어나면 → 무조건 노출, 서버에서 일어나면 → 숨겨짐.</b> 프레임워크를 써도 ‘진짜 서버(Vercel·Cloudflare)’가 있어야 주방이 생겨 키를 숨길 수 있어요. GitHub Pages는 프레임워크를 올려도 여전히 ‘주방 없는 가정집’입니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. STEP 5-A 깃 연동 -->
     <section class="slide" data-label="STEP 5 · 깃 연동">
       <div class="slide-inner">
         <div class="two">
@@ -557,7 +583,7 @@ github.com/내계정/asanAX 에 푸시해줘.</pre>
   <div class="dots" id="dots"></div>
   <button class="nav-btn" id="next" aria-label="다음 슬라이드"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
 </div>
-<div class="counter"><b id="cur">1</b> / <span id="total">13</span></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">14</span></div>
 <div class="kbd-hint"><span class="kbd">←</span><span class="kbd">→</span><span>방향키 · 스페이스로 이동</span></div>
 
 <script>
