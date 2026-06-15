@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>클라이언트 · 서버 · DB — 식당으로 이해하기 | 바이브 코더를 위한 IT 기초</title>
+<meta name="description" content="IT 지식이 전혀 없어도 괜찮아요. 클라이언트, 서버, 데이터베이스를 동네 식당에 비유해서 가장 쉽게 설명합니다." />
+<meta property="og:title" content="클라이언트 · 서버 · DB — 식당으로 이해하기" />
+<meta property="og:description" content="버튼을 누르면 화면이 바뀌는 그 일이, 사실은 식당에서 주문하고 음식이 나오는 과정과 똑같습니다." />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root {
+    --bg:        #f7f4ef;
+    --bg-soft:   #fffdfa;
+    --ink:       #1d1b18;
+    --ink-soft:  #57514a;
+    --muted:     #8a837a;
+    --line:      #e6e0d6;
+    --line-soft: #efeae1;
+
+    /* 세 주인공의 색 — 모두 채도를 낮춘 흙빛 계열로 통일 */
+    --client: #3f6f7a;   /* 손님 — 차분한 청록 */
+    --client-bg: #e7eef0;
+    --server: #b5532e;   /* 주방 — 점토색(메인 강조) */
+    --server-bg: #f4e6df;
+    --db:     #5d6b47;   /* 창고 — 세이지 그린 */
+    --db-bg:  #e9ece0;
+
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --shadow-soft: 0 18px 40px -22px rgba(40,30,20,0.22);
+    --shadow-card: 0 1px 0 rgba(255,255,255,0.6) inset, 0 24px 48px -28px rgba(40,30,20,0.28);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* 종이 질감 노이즈 — 스크롤과 무관한 고정 레이어 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+
+  a { color: inherit; }
+
+  .mono { font-family: var(--mono); font-feature-settings: "ss01"; letter-spacing: -0.02em; }
+
+  /* ---------- 상단 내비 ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 40;
+    backdrop-filter: blur(12px);
+    background: rgba(247,244,239,0.78);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s ease, background .3s ease;
+  }
+  nav.scrolled { border-color: var(--line); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.03em; }
+  .brand-dot { width: 11px; height: 11px; border-radius: 3px; background: var(--server); box-shadow: 0 0 0 4px var(--server-bg); }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a {
+    font-size: 14px; color: var(--ink-soft); text-decoration: none; font-weight: 500;
+    padding: 8px 12px; border-radius: 9px; transition: background .2s ease, color .2s ease;
+  }
+  .nav-links a:hover { background: var(--bg-soft); color: var(--ink); }
+  @media (max-width: 680px){ .nav-links { display: none; } }
+
+  /* ---------- 히어로 ---------- */
+  header.hero { padding: 80px 0 64px; position: relative; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.02em;
+    color: var(--server); background: var(--server-bg);
+    padding: 7px 13px; border-radius: 999px; font-weight: 600;
+    margin-bottom: 26px;
+  }
+  .eyebrow .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--server); animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{ box-shadow: 0 0 0 0 rgba(181,83,46,.4);} 50%{ box-shadow: 0 0 0 7px rgba(181,83,46,0);} }
+
+  h1.title {
+    font-size: clamp(2.5rem, 7vw, 4.6rem);
+    line-height: 0.98; letter-spacing: -0.04em; font-weight: 800;
+    margin: 0 0 24px; max-width: 16ch;
+  }
+  h1.title .hl { position: relative; white-space: nowrap; }
+  h1.title .hl::after {
+    content:""; position:absolute; left:-2px; right:-2px; bottom: 0.08em; height: 0.34em;
+    background: var(--server-bg); z-index:-1; border-radius: 3px; transform: rotate(-0.6deg);
+  }
+  .lede { font-size: clamp(1.05rem, 2.4vw, 1.3rem); color: var(--ink-soft); max-width: 54ch; margin: 0 0 36px; }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
+    font-weight: 600; font-size: 15px; text-decoration: none;
+    padding: 13px 22px; border-radius: 13px; border: 1px solid transparent;
+    transition: transform .12s cubic-bezier(.16,1,.3,1), box-shadow .2s ease, background .2s ease;
+  }
+  .btn:active { transform: translateY(1px) scale(.99); }
+  .btn-primary { background: var(--ink); color: var(--bg-soft); box-shadow: var(--shadow-soft); }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+  .btn-ghost:hover { background: var(--bg-soft); border-color: var(--muted); }
+
+  /* 히어로 하단 미니 다이어그램 */
+  .hero-strip {
+    margin-top: 56px; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: stretch; gap: 0; border: 1px solid var(--line); border-radius: 20px;
+    background: var(--bg-soft); overflow: hidden; box-shadow: var(--shadow-soft);
+  }
+  .strip-cell { padding: 22px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .strip-cell .role { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+  .strip-cell .who { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+  .strip-cell .desc { font-size: 13.5px; color: var(--muted); }
+  .strip-arrow { display: flex; align-items: center; justify-content: center; padding: 0 4px; color: var(--muted); font-size: 20px; }
+  .c-client .role { color: var(--client); } .c-client .who { color: var(--client); }
+  .c-server .role { color: var(--server); } .c-server .who { color: var(--server); }
+  .c-db .role { color: var(--db); } .c-db .who { color: var(--db); }
+  @media (max-width: 760px){
+    .hero-strip { grid-template-columns: 1fr; }
+    .strip-arrow { transform: rotate(90deg); padding: 6px 0; }
+  }
+
+  /* ---------- 공통 섹션 ---------- */
+  section { padding: 84px 0; position: relative; }
+  .section-tag {
+    font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: .04em;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+  }
+  .section-tag::before { content:""; width: 28px; height: 1px; background: var(--muted); }
+  h2.sec {
+    font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.04; letter-spacing: -0.035em;
+    font-weight: 800; margin: 0 0 18px; max-width: 20ch;
+  }
+  .sec-lede { font-size: 1.08rem; color: var(--ink-soft); max-width: 60ch; margin: 0; }
+
+  /* ---------- 비유 한 장면 ---------- */
+  .scene {
+    margin-top: 48px; border: 1px solid var(--line); border-radius: 28px;
+    background: linear-gradient(180deg, var(--bg-soft), #fbf8f3);
+    padding: clamp(28px, 4vw, 52px); box-shadow: var(--shadow-card); position: relative; overflow: hidden;
+  }
+  .scene-head { display:flex; align-items:baseline; gap:14px; flex-wrap: wrap; margin-bottom: 30px; }
+  .scene-head h3 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; margin: 0; }
+  .scene-head span { font-size: 14px; color: var(--muted); }
+  .scene-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 760px){ .scene-grid { grid-template-columns: 1fr; } }
+  .scene-card {
+    border-radius: 18px; padding: 24px; border: 1px solid var(--line-soft);
+    background: var(--bg-soft); display:flex; flex-direction: column; gap: 14px;
+    transition: transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease;
+  }
+  .scene-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-soft); }
+  .scene-icon { width: 52px; height: 52px; border-radius: 14px; display:grid; place-items:center; }
+  .scene-card.client .scene-icon { background: var(--client-bg); color: var(--client); }
+  .scene-card.server .scene-icon { background: var(--server-bg); color: var(--server); }
+  .scene-card.db .scene-icon { background: var(--db-bg); color: var(--db); }
+  .scene-card .label { font-family: var(--mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .scene-card h4 { margin: 0; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; }
+  .scene-card.client h4 { color: var(--client); }
+  .scene-card.server h4 { color: var(--server); }
+  .scene-card.db h4 { color: var(--db); }
+  .scene-card p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+
+  /* ---------- 지그재그 상세 ---------- */
+  .deep { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-top: 48px; }
+  .deep.flip .deep-visual { order: 2; }
+  @media (max-width: 860px){ .deep { grid-template-columns: 1fr; gap: 32px; } .deep.flip .deep-visual { order: 0; } }
+  .deep-kicker { font-family: var(--mono); font-size: 13px; letter-spacing: .04em; font-weight: 600; margin-bottom: 14px; }
+  .deep h3 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); letter-spacing: -0.03em; line-height: 1.08; margin: 0 0 16px; font-weight: 800; }
+  .deep p { color: var(--ink-soft); font-size: 1.02rem; margin: 0 0 18px; }
+  .deep ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  .deep li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; color: var(--ink-soft); }
+  .deep li .tick { flex: none; width: 22px; height: 22px; border-radius: 7px; display:grid; place-items:center; margin-top: 1px; }
+  .c-client-k { color: var(--client); } .c-server-k { color: var(--server); } .c-db-k { color: var(--db); }
+
+  .deep-visual {
+    border-radius: 24px; padding: 32px; min-height: 280px;
+    border: 1px solid var(--line); position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center; gap: 16px;
+    box-shadow: var(--shadow-card);
+  }
+  .vis-client { background: linear-gradient(165deg, var(--client-bg), #f3f7f8); }
+  .vis-server { background: linear-gradient(165deg, var(--server-bg), #faf0ea); }
+  .vis-db { background: linear-gradient(165deg, var(--db-bg), #f3f5ec); }
+
+  /* 미니 브라우저 목업 (클라이언트) */
+  .browser { background: #fff; border-radius: 14px; box-shadow: var(--shadow-soft); overflow: hidden; border: 1px solid var(--line-soft); }
+  .browser-bar { display:flex; align-items:center; gap:7px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); background: #fbfaf8; }
+  .browser-bar i { width: 11px; height: 11px; border-radius: 50%; display:block; }
+  .browser-bar .url { margin-left: 10px; font-family: var(--mono); font-size: 11.5px; color: var(--muted); background: #f1eee9; padding: 4px 10px; border-radius: 6px; flex:1; }
+  .browser-body { padding: 18px; display:flex; flex-direction:column; gap: 10px; }
+  .skel { height: 11px; border-radius: 5px; background: linear-gradient(90deg, #eee8df 25%, #f6f1e9 37%, #eee8df 63%); background-size: 400% 100%; animation: shimmer 1.6s linear infinite; }
+  @keyframes shimmer { 0%{ background-position: 100% 0;} 100%{ background-position: -100% 0;} }
+  .heart-btn { align-self:flex-start; display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color: var(--client); background:#fff; border:1px solid var(--line-soft); padding:7px 13px; border-radius: 10px; }
+
+  /* 서버 = 코드 처리 카드 */
+  .term { background: #211f1c; border-radius: 14px; padding: 18px; font-family: var(--mono); font-size: 13px; color: #e9e3d8; box-shadow: var(--shadow-soft); }
+  .term .ln { display:flex; gap: 10px; opacity:0; transform: translateY(4px); animation: lineIn .5s ease forwards; }
+  .term .ln .n { color: #6f675c; user-select:none; }
+  .term .ln .k { color: #e08a5f; }
+  .term .ln .s { color: #9bbf7a; }
+  .term .ln .c { color: #6f675c; }
+  @keyframes lineIn { to { opacity:1; transform: none; } }
+
+  /* DB = 선반 */
+  .shelf { display:flex; flex-direction: column; gap: 10px; }
+  .shelf-row { background:#fff; border:1px solid var(--line-soft); border-radius:11px; padding: 11px 14px; display:flex; justify-content:space-between; align-items:center; font-size:13px; box-shadow: 0 1px 0 rgba(0,0,0,.02); }
+  .shelf-row .key { font-family: var(--mono); color: var(--db); font-weight:600; }
+  .shelf-row .val { color: var(--ink-soft); }
+  .shelf-head { font-family: var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color: var(--muted); display:flex; justify-content:space-between; padding: 0 4px; }
+
+  /* ---------- 인터랙티브 주문 흐름 ---------- */
+  .flow-wrap { margin-top: 48px; border: 1px solid var(--line); border-radius: 28px; background: var(--bg-soft); padding: clamp(24px,3.5vw,44px); box-shadow: var(--shadow-card); }
+  .flow-stage { position: relative; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px){ .flow-stage { grid-template-columns: 1fr; } }
+  .node {
+    border-radius: 18px; padding: 22px 20px; border: 2px solid transparent; background: #fff;
+    text-align: center; position: relative; transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease;
+  }
+  .node .nicon { width: 46px; height: 46px; border-radius: 13px; margin: 0 auto 12px; display:grid; place-items:center; }
+  .node h5 { margin: 0 0 4px; font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .node p { margin: 0; font-size: 12.5px; color: var(--muted); }
+  .node.n-client .nicon { background: var(--client-bg); color: var(--client); }
+  .node.n-server .nicon { background: var(--server-bg); color: var(--server); }
+  .node.n-db .nicon { background: var(--db-bg); color: var(--db); }
+  .node.active { transform: translateY(-4px); box-shadow: var(--shadow-soft); }
+  .node.n-client.active { border-color: var(--client); }
+  .node.n-server.active { border-color: var(--server); }
+  .node.n-db.active { border-color: var(--db); }
+
+  /* 움직이는 주문서/접시 */
+  .packet {
+    position: absolute; top: 24px; left: 0; width: 38px; height: 38px; border-radius: 11px;
+    display:grid; place-items:center; font-size: 18px; z-index: 5;
+    background: #fff; box-shadow: var(--shadow-soft); border: 1px solid var(--line);
+    opacity: 0; transition: opacity .25s ease;
+  }
+  .flow-status {
+    margin-top: 22px; min-height: 26px; font-family: var(--mono); font-size: 14px; color: var(--ink-soft);
+    display:flex; align-items:center; gap: 10px;
+  }
+  .flow-status .dot { width:8px; height:8px; border-radius:50%; background: var(--muted); flex:none; }
+  .flow-status.run .dot { background: var(--server); animation: pulse 1s infinite; }
+  .flow-controls { margin-top: 8px; display:flex; gap: 10px; flex-wrap: wrap; align-items:center; }
+
+  /* ---------- 용어 사전 ---------- */
+  .glossary { margin-top: 44px; border-top: 1px solid var(--line); }
+  .gloss-row { border-bottom: 1px solid var(--line); padding: 24px 4px; display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: start; transition: background .2s ease; }
+  .gloss-row:hover { background: var(--bg-soft); }
+  @media (max-width: 680px){ .gloss-row { grid-template-columns: 1fr; gap: 8px; } }
+  .gloss-term { font-weight: 800; letter-spacing: -0.02em; font-size: 1.08rem; }
+  .gloss-term .en { display:block; font-family: var(--mono); font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 3px; }
+  .gloss-def { color: var(--ink-soft); font-size: 15px; }
+
+  /* ---------- 미니 퀴즈 ---------- */
+  .quiz { margin-top: 44px; display: grid; gap: 16px; }
+  .qcard { border: 1px solid var(--line); border-radius: 18px; background: var(--bg-soft); padding: 24px; box-shadow: var(--shadow-soft); }
+  .qcard .q { font-weight: 700; font-size: 1.05rem; margin: 0 0 16px; letter-spacing: -0.02em; }
+  .opts { display: grid; gap: 10px; }
+  .opt {
+    text-align: left; cursor: pointer; padding: 13px 16px; border-radius: 12px; font-size: 15px;
+    border: 1px solid var(--line); background: #fff; color: var(--ink); font-family: inherit;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .opt:hover { border-color: var(--muted); }
+  .opt:active { transform: scale(.99); }
+  .opt.correct { border-color: var(--db); background: var(--db-bg); color: var(--db); font-weight: 600; }
+  .opt.wrong { border-color: #c0563a; background: #f6e3dd; color: #99402a; }
+  .qfeed { margin: 14px 0 0; font-size: 14px; color: var(--ink-soft); min-height: 0; }
+
+  /* ---------- 리빌 애니메이션 ---------- */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce){
+    .reveal { opacity:1; transform:none; transition:none; }
+    .skel, .pulse, .eyebrow .pulse { animation: none !important; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ---------- 푸터 ---------- */
+  footer { padding: 64px 0 80px; border-top: 1px solid var(--line); margin-top: 40px; }
+  .foot-inner { display:flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .foot-inner p { margin: 0; color: var(--muted); font-size: 14px; max-width: 46ch; }
+  .foot-inner .next { font-weight: 700; letter-spacing: -0.02em; }
+  .foot-inner .next span { color: var(--server); }
+
+  /* 스크롤 진행 바 */
+  .progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--server); z-index: 50; transition: width .1s linear; }
+
+  svg { display:block; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<nav id="nav">
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="brand-dot"></span> 바이브 코더 기초반</div>
+    <div class="nav-links">
+      <a href="#scene">비유로 보기</a>
+      <a href="#client">클라이언트</a>
+      <a href="#server">서버</a>
+      <a href="#db">데이터베이스</a>
+      <a href="#flow">전체 흐름</a>
+      <a href="#quiz">복습</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="pulse"></span> 01 · IT 기초 / 코드 한 줄 몰라도 OK</span>
+    <h1 class="title">버튼을 눌렀더니<br>화면이 바뀌는 일,<br>사실은 <span class="hl">식당에서 주문</span>하는 것과 같아요</h1>
+    <p class="lede">‘클라이언트’, ‘서버’, ‘데이터베이스’. 개발 이야기를 들으면 꼭 나오는 세 단어죠. 어려운 용어는 잠깐 내려놓고, 우리가 매일 가는 식당 한 곳을 떠올려 보면 끝납니다.</p>
+    <div class="hero-cta">
+      <a href="#scene" class="btn btn-primary">식당 문 열고 들어가기
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="#flow" class="btn btn-ghost">주문 흐름 바로 보기</a>
+    </div>
+
+    <div class="hero-strip reveal">
+      <div class="strip-cell c-client">
+        <span class="role">손님</span>
+        <span class="who">클라이언트</span>
+        <span class="desc">주문하고 음식을 받는 쪽</span>
+      </div>
+      <div class="strip-arrow">→</div>
+      <div class="strip-cell c-server">
+        <span class="role">주방 · 직원</span>
+        <span class="who">서버</span>
+        <span class="desc">주문을 받아 요리하는 쪽</span>
+      </div>
+      <div class="strip-arrow">→</div>
+      <div class="strip-cell c-db">
+        <span class="role">창고 · 냉장고</span>
+        <span class="who">데이터베이스</span>
+        <span class="desc">재료를 보관하는 쪽</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 비유 한 장면 ================= -->
+<section id="scene">
+  <div class="wrap">
+    <div class="section-tag mono reveal">THE ANALOGY</div>
+    <h2 class="sec reveal">하나의 식당 안에 세 명의 주인공이 있습니다</h2>
+    <p class="sec-lede reveal">웹사이트나 앱이 돌아가는 원리는, 잘 굴러가는 식당과 똑같이 ‘역할 분담’으로 이루어져 있어요. 각자 맡은 일이 다를 뿐, 셋이 손발을 맞춰야 음식 한 접시가 나옵니다.</p>
+
+    <div class="scene reveal">
+      <div class="scene-head">
+        <h3>“라멘집 ‘목요일의 국물’에 오신 걸 환영합니다”</h3>
+        <span>— 이 가게 하나로 끝까지 갑니다</span>
+      </div>
+      <div class="scene-grid">
+        <div class="scene-card client">
+          <div class="scene-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          </div>
+          <span class="label">손님 · Client</span>
+          <h4>주문하는 사람</h4>
+          <p>메뉴판을 보고, 먹고 싶은 걸 고르고, 음식이 나오면 받습니다. 주방 안에서 무슨 일이 일어나는지는 몰라도 돼요. ‘원하는 것을 말하고, 결과를 받는’ 쪽입니다.</p>
+        </div>
+        <div class="scene-card server">
+          <div class="scene-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11h18M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4M6 11v8M18 11v8M4 19h16"/></svg>
+          </div>
+          <span class="label">주방·직원 · Server</span>
+          <h4>요리하는 사람</h4>
+          <p>손님의 주문을 받아 실제로 일을 처리합니다. 창고에서 재료를 꺼내 조리하고, 완성된 음식을 손님에게 내어줍니다. ‘요청을 처리해서 돌려주는’ 쪽입니다.</p>
+        </div>
+        <div class="scene-card db">
+          <div class="scene-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+          </div>
+          <span class="label">창고·냉장고 · Database</span>
+          <h4>재료를 보관하는 곳</h4>
+          <p>면, 육수, 계란, 파… 모든 재료가 차곡차곡 정리되어 있습니다. 손님과 직접 이야기하지 않아요. 오직 주방(서버)만 드나들며 필요한 재료를 꺼내 씁니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 클라이언트 ================= -->
+<section id="client">
+  <div class="wrap">
+    <div class="deep">
+      <div class="deep-text reveal">
+        <div class="deep-kicker c-client-k">CLIENT · 손님</div>
+        <h3>클라이언트는 <br>‘내 눈에 보이는 모든 것’입니다</h3>
+        <p>여러분이 지금 보고 있는 이 화면, 인스타그램 앱, 카카오톡 채팅창. 손가락으로 만지고 눈으로 보는 부분 전부가 클라이언트예요. 식당에서 ‘손님이 앉은 자리’에 해당합니다.</p>
+        <ul>
+          <li><span class="tick" style="background:var(--client-bg);color:var(--client)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            웹 브라우저(크롬·사파리)나 휴대폰 앱이 바로 클라이언트입니다.</li>
+          <li><span class="tick" style="background:var(--client-bg);color:var(--client)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            ‘좋아요’를 누르거나 글을 쓰는 행동 = 주방에 보내는 <b>주문(요청)</b>입니다.</li>
+          <li><span class="tick" style="background:var(--client-bg);color:var(--client)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            요리 자체는 못 만들어요. 그저 ‘요청하고, 받아서 예쁘게 보여주는’ 역할입니다.</li>
+        </ul>
+      </div>
+      <div class="deep-visual vis-client reveal">
+        <div class="browser">
+          <div class="browser-bar">
+            <i style="background:#e7837a"></i><i style="background:#e9c46a"></i><i style="background:#83b07a"></i>
+            <span class="url">www.목요일의국물.kr</span>
+          </div>
+          <div class="browser-body">
+            <div class="skel" style="width:70%"></div>
+            <div class="skel" style="width:90%"></div>
+            <div class="skel" style="width:55%"></div>
+            <button class="heart-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.3-9C1 8.5 2.7 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.3 0 5 3.5 3.3 7-2.3 4.4-9.3 9-9.3 9z"/></svg>
+              좋아요 · 1,204
+            </button>
+          </div>
+        </div>
+        <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">손님이 보는 ‘자리’ — 화면과 버튼</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 서버 ================= -->
+<section id="server">
+  <div class="wrap">
+    <div class="deep flip">
+      <div class="deep-visual vis-server reveal">
+        <div class="term">
+          <div class="ln" style="animation-delay:.05s"><span class="n">1</span><span><span class="c">// 손님이 "좋아요"를 주문함</span></span></div>
+          <div class="ln" style="animation-delay:.35s"><span class="n">2</span><span><span class="k">받는다</span> 주문 = 좋아요(게시글 #88)</span></div>
+          <div class="ln" style="animation-delay:.65s"><span class="n">3</span><span><span class="k">꺼낸다</span> 창고에서 게시글 #88</span></div>
+          <div class="ln" style="animation-delay:.95s"><span class="n">4</span><span>좋아요 수 1204 → <span class="s">1205</span></span></div>
+          <div class="ln" style="animation-delay:1.25s"><span class="n">5</span><span><span class="k">돌려준다</span> 손님에게 <span class="s">"완료!"</span></span></div>
+        </div>
+        <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">주방에서 벌어지는 일 — 보이지 않는 처리 과정</p>
+      </div>
+      <div class="deep-text reveal">
+        <div class="deep-kicker c-server-k">SERVER · 주방</div>
+        <h3>서버는 <br>‘보이지 않는 곳에서 일하는 주방’입니다</h3>
+        <p>손님 눈에는 안 보이지만, 사실 모든 진짜 일은 여기서 일어납니다. 주문을 받고, 규칙대로 처리하고, 창고를 뒤져 결과를 만들어 다시 손님에게 내보내죠. 24시간 불이 꺼지지 않는 컴퓨터라고 생각하면 됩니다.</p>
+        <ul>
+          <li><span class="tick" style="background:var(--server-bg);color:var(--server)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            어딘가에 항상 켜져 있는 <b>강력한 컴퓨터</b>입니다. 내 노트북이 꺼져도 돌아가요.</li>
+          <li><span class="tick" style="background:var(--server-bg);color:var(--server)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            ‘좋아요 1개를 더해라’ 같은 <b>규칙·계산</b>을 처리하는 두뇌 역할.</li>
+          <li><span class="tick" style="background:var(--server-bg);color:var(--server)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            손님과 창고 사이의 <b>유일한 통로</b>. 손님은 창고에 직접 못 들어갑니다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 데이터베이스 ================= -->
+<section id="db">
+  <div class="wrap">
+    <div class="deep">
+      <div class="deep-text reveal">
+        <div class="deep-kicker c-db-k">DATABASE · 창고</div>
+        <h3>데이터베이스는 <br>‘잘 정리된 거대한 창고’입니다</h3>
+        <p>회원 정보, 올린 사진, 좋아요 숫자, 주고받은 메시지. 사라지면 안 되는 모든 것이 여기에 보관됩니다. 그냥 쌓아두는 게 아니라, 필요할 때 ‘게시글 88번 가져와’처럼 빠르게 찾을 수 있게 칸칸이 정리돼 있어요.</p>
+        <ul>
+          <li><span class="tick" style="background:var(--db-bg);color:var(--db)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            전원이 꺼져도 <b>데이터가 남아있는</b> 영구 보관소입니다.</li>
+          <li><span class="tick" style="background:var(--db-bg);color:var(--db)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            엑셀 표처럼 <b>줄과 칸</b>으로 정리돼 있어 원하는 걸 빠르게 찾습니다.</li>
+          <li><span class="tick" style="background:var(--db-bg);color:var(--db)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>
+            손님을 직접 상대하지 않아요. <b>오직 주방(서버)만</b> 드나듭니다.</li>
+        </ul>
+      </div>
+      <div class="deep-visual vis-db reveal">
+        <div class="shelf">
+          <div class="shelf-head"><span>users 선반</span><span>3개 보관 중</span></div>
+          <div class="shelf-row"><span class="key">id: 01</span><span class="val">민하 · 가입 2023.04</span></div>
+          <div class="shelf-row"><span class="key">id: 02</span><span class="val">도윤 · 가입 2024.11</span></div>
+          <div class="shelf-row"><span class="key">id: 03</span><span class="val">서아 · 가입 2025.02</span></div>
+          <div class="shelf-head" style="margin-top:6px"><span>posts 선반</span><span>게시글 #88</span></div>
+          <div class="shelf-row"><span class="key">like</span><span class="val">1,204 → 1,205</span></div>
+        </div>
+        <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">창고 선반 — 칸칸이 정리된 데이터</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 전체 흐름 (인터랙티브) ================= -->
+<section id="flow">
+  <div class="wrap">
+    <div class="section-tag mono reveal">THE FULL JOURNEY</div>
+    <h2 class="sec reveal">‘좋아요’ 한 번에 셋이 함께 움직입니다</h2>
+    <p class="sec-lede reveal">아래 버튼을 눌러보세요. 여러분이 화면에서 ‘좋아요’를 누르는 순간, 주문서가 어떻게 주방과 창고를 거쳐 다시 돌아오는지 직접 따라가 볼 수 있어요.</p>
+
+    <div class="flow-wrap reveal">
+      <div class="flow-stage" id="stage">
+        <div class="packet" id="packet"></div>
+        <div class="node n-client" id="node-client">
+          <div class="nicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+          <h5>① 손님 (클라이언트)</h5>
+          <p>“좋아요!” 주문을 보냄</p>
+        </div>
+        <div class="node n-server" id="node-server">
+          <div class="nicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11h18M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4M6 11v8M18 11v8M4 19h16"/></svg></div>
+          <h5>② 주방 (서버)</h5>
+          <p>주문 받고 처리 시작</p>
+        </div>
+        <div class="node n-db" id="node-db">
+          <div class="nicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
+          <h5>③ 창고 (DB)</h5>
+          <p>숫자 꺼내 +1 저장</p>
+        </div>
+      </div>
+
+      <div class="flow-status" id="status"><span class="dot"></span><span id="status-text">버튼을 눌러 주문을 시작해 보세요.</span></div>
+      <div class="flow-controls">
+        <button class="btn btn-primary" id="run-flow">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.3-9C1 8.5 2.7 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.3 0 5 3.5 3.3 7-2.3 4.4-9.3 9-9.3 9z"/></svg>
+          좋아요 눌러보기
+        </button>
+        <span class="mono" style="font-size:13px;color:var(--muted)">상태: <b id="like-count" style="color:var(--server)">1,204</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 용어 사전 ================= -->
+<section id="glossary-sec">
+  <div class="wrap">
+    <div class="section-tag mono reveal">CHEAT SHEET</div>
+    <h2 class="sec reveal">한 줄로 정리하는 용어장</h2>
+    <p class="sec-lede reveal">개발자와 대화할 때 이 표 하나면 충분합니다. 식당 비유와 함께 외워두세요.</p>
+
+    <div class="glossary reveal">
+      <div class="gloss-row">
+        <div class="gloss-term">클라이언트 <span class="en">Client / Front-end</span></div>
+        <div class="gloss-def"><b>손님 = 화면.</b> 사용자가 직접 보고 만지는 부분. 웹사이트 화면, 휴대폰 앱이 여기에 해당합니다. ‘프론트엔드’라고도 불러요.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-term">서버 <span class="en">Server / Back-end</span></div>
+        <div class="gloss-def"><b>주방 = 처리.</b> 요청을 받아 실제 일을 하고 결과를 돌려주는 컴퓨터. 보이지 않는 곳에서 돌아갑니다. ‘백엔드’라고도 불러요.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-term">데이터베이스 <span class="en">Database / DB</span></div>
+        <div class="gloss-def"><b>창고 = 보관.</b> 데이터를 영구히 저장하고 빠르게 찾아주는 곳. 서버만 접근할 수 있습니다.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-term">요청 <span class="en">Request</span></div>
+        <div class="gloss-def"><b>주문서.</b> 클라이언트가 서버에게 보내는 ‘이거 해주세요’ 메시지. 좋아요, 로그인, 검색 모두 요청입니다.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-term">응답 <span class="en">Response</span></div>
+        <div class="gloss-def"><b>나온 음식.</b> 서버가 처리를 마치고 클라이언트에게 돌려주는 결과. 이걸 받아 화면이 바뀝니다.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-term">API <span class="en">Application Programming Interface</span></div>
+        <div class="gloss-def"><b>메뉴판 + 주문 규칙.</b> 손님이 아무 말이나 하는 게 아니라 정해진 메뉴로 주문하듯, 클라이언트와 서버가 약속한 ‘주문하는 방식’입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 미니 퀴즈 ================= -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="section-tag mono reveal">CHECK YOURSELF</div>
+    <h2 class="sec reveal">30초 복습 퀴즈</h2>
+    <p class="sec-lede reveal">감이 잡혔는지 가볍게 확인해 봐요. 정답은 누르면 바로 알려드립니다.</p>
+
+    <div class="quiz reveal" id="quiz-root">
+      <div class="qcard" data-answer="1">
+        <p class="q">Q1. 인스타그램 ‘앱 화면’은 식당에서 무엇에 해당할까요?</p>
+        <div class="opts">
+          <button class="opt">주방 (서버)</button>
+          <button class="opt">손님 자리 (클라이언트)</button>
+          <button class="opt">창고 (데이터베이스)</button>
+        </div>
+        <p class="qfeed"></p>
+      </div>
+      <div class="qcard" data-answer="2">
+        <p class="q">Q2. 올린 사진이 ‘사라지지 않고 보관되는’ 곳은 어디일까요?</p>
+        <div class="opts">
+          <button class="opt">손님 (클라이언트)</button>
+          <button class="opt">메뉴판 (API)</button>
+          <button class="opt">창고 (데이터베이스)</button>
+        </div>
+        <p class="qfeed"></p>
+      </div>
+      <div class="qcard" data-answer="0">
+        <p class="q">Q3. 손님은 창고(DB)에 직접 들어갈 수 있을까요?</p>
+        <div class="opts">
+          <button class="opt">아니요, 주방(서버)을 거쳐야만 해요</button>
+          <button class="opt">네, 언제든 직접 꺼내 씁니다</button>
+          <button class="opt">창고는 손님이 직접 관리해요</button>
+        </div>
+        <p class="qfeed"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <p>이 자료는 코드 한 줄 몰라도 ‘무슨 이야기를 하는지’ 감을 잡게 하는 것이 목표입니다. 천천히, 비유로, 한 번에 하나씩.</p>
+    <div>
+      <div class="next">다음 편 예고 · <span>“프론트엔드 vs 백엔드, 더 깊게”</span></div>
+      <p style="margin-top:8px">바이브 코더 기초반 · 01화</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // 스크롤 진행 바 + 내비 그림자
+  const progress = document.getElementById('progress');
+  const nav = document.getElementById('nav');
+  function onScroll(){
+    const h = document.documentElement;
+    const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    progress.style.width = (scrolled * 100) + '%';
+    nav.classList.toggle('scrolled', h.scrollTop > 8);
+  }
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // 등장 애니메이션
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ---- 인터랙티브 주문 흐름 ----
+  const packet = document.getElementById('packet');
+  const stage = document.getElementById('stage');
+  const nodeClient = document.getElementById('node-client');
+  const nodeServer = document.getElementById('node-server');
+  const nodeDb = document.getElementById('node-db');
+  const statusEl = document.getElementById('status');
+  const statusText = document.getElementById('status-text');
+  const likeCount = document.getElementById('like-count');
+  const runBtn = document.getElementById('run-flow');
+  let likes = 1204;
+  let running = false;
+
+  // 주문서 / 재료상자 / 음식 아이콘 (이모지 대신 SVG)
+  const ICON = {
+    order: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b5532e" stroke-width="1.8"><path d="M7 3h7l4 4v14H7zM14 3v4h4" stroke-linejoin="round"/><path d="M9.5 12h6M9.5 15h4" stroke-linecap="round"/></svg>',
+    box:   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5d6b47" stroke-width="1.8"><path d="M3 8l9-4 9 4-9 4-9-4z" stroke-linejoin="round"/><path d="M3 8v8l9 4 9-4V8M12 12v8" stroke-linejoin="round"/></svg>',
+    food:  '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b5532e" stroke-width="1.8"><path d="M3 11h18a9 9 0 0 1-18 0z" stroke-linejoin="round"/><path d="M2 21h20" stroke-linecap="round"/><path d="M8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3" stroke-linecap="round"/></svg>'
+  };
+
+  const centerOf = (node) => {
+    const s = stage.getBoundingClientRect();
+    const r = node.getBoundingClientRect();
+    return (r.left - s.left) + r.width / 2 - 19; // 19 = packet 절반
+  };
+  const clearActive = () => [nodeClient,nodeServer,nodeDb].forEach(n => n.classList.remove('active'));
+  const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+  async function runFlow(){
+    if (running) return;
+    running = true;
+    runBtn.disabled = true;
+    runBtn.style.opacity = .6;
+    statusEl.classList.add('run');
+
+    // 1) 손님이 주문
+    clearActive(); nodeClient.classList.add('active');
+    packet.innerHTML = ICON.order; packet.style.left = centerOf(nodeClient) + 'px'; packet.style.opacity = 1;
+    statusText.textContent = '주문서 작성: "게시글 88에 좋아요!"';
+    await wait(900);
+
+    // 2) 주방으로 이동
+    packet.style.left = centerOf(nodeServer) + 'px';
+    statusText.textContent = '주방(서버)으로 주문 전달 중…';
+    await wait(700);
+    clearActive(); nodeServer.classList.add('active');
+    statusText.textContent = '주방이 주문을 받았습니다. 창고에서 재료를 찾는 중…';
+    await wait(800);
+
+    // 3) 창고로 이동
+    packet.innerHTML = ICON.box;
+    packet.style.left = centerOf(nodeDb) + 'px';
+    await wait(700);
+    clearActive(); nodeDb.classList.add('active');
+    statusText.textContent = '창고(DB)에서 좋아요 숫자를 꺼내 +1 저장 완료.';
+    likes += 1; likeCount.textContent = likes.toLocaleString();
+    await wait(900);
+
+    // 4) 음식 들고 다시 주방 → 손님
+    packet.innerHTML = ICON.food;
+    packet.style.left = centerOf(nodeServer) + 'px';
+    clearActive(); nodeServer.classList.add('active');
+    statusText.textContent = '결과를 들고 주방을 거쳐 손님에게 돌아갑니다…';
+    await wait(750);
+    packet.style.left = centerOf(nodeClient) + 'px';
+    clearActive(); nodeClient.classList.add('active');
+    await wait(700);
+
+    statusText.textContent = '완료! 화면의 좋아요 숫자가 바뀌었습니다. (' + likes.toLocaleString() + ')';
+    statusEl.classList.remove('run');
+    await wait(600);
+    packet.style.opacity = 0;
+    clearActive();
+    runBtn.disabled = false;
+    runBtn.style.opacity = 1;
+    running = false;
+  }
+  runBtn.addEventListener('click', runFlow);
+  window.addEventListener('resize', () => {
+    if (packet.style.opacity === '1' && nodeClient.classList.contains('active')) {
+      packet.style.left = centerOf(nodeClient) + 'px';
+    }
+  });
+
+  // ---- 퀴즈 ----
+  document.querySelectorAll('#quiz-root .qcard').forEach(card => {
+    const answer = parseInt(card.dataset.answer, 10);
+    const opts = [...card.querySelectorAll('.opt')];
+    const feed = card.querySelector('.qfeed');
+    opts.forEach((opt, i) => {
+      opt.addEventListener('click', () => {
+        if (card.dataset.done) return;
+        card.dataset.done = '1';
+        opts[answer].classList.add('correct');
+        if (i === answer){
+          feed.textContent = '정답이에요! 비유가 머릿속에 잘 자리 잡았네요.';
+        } else {
+          opt.classList.add('wrong');
+          feed.textContent = '아쉬워요. 초록색으로 표시된 것이 정답입니다.';
+        }
+        opts.forEach(o => o.style.pointerEvents = 'none');
+      });
+    });
+  });
+</script>
+</body>
+</html>
