@@ -145,6 +145,7 @@
   /* 코드 블록 */
   .code { background:#211f1c; border-radius:14px; padding:18px; font-family:var(--mono); font-size:12.5px; line-height:1.7; color:#e9e3d8; box-shadow:var(--shadow-soft); overflow-x:auto; }
   .code .cm { color:#6f675c; } .code .k { color:#e08a5f; } .code .s { color:#9bbf7a; } .code .p { color:#7fb0bd; }
+  .code .tok { background:rgba(224,138,95,.28); color:#ffd9c4; border-radius:5px; padding:1px 6px; font-weight:700; box-shadow:0 0 0 1px rgba(224,138,95,.55); }
   .code .ln2 { white-space:pre; }
 
   /* 브라우저 목업 + 채팅 */
@@ -361,12 +362,12 @@
       <div class="slide-inner">
         <div class="two flip">
           <div class="two-visual reveal" style="background:linear-gradient(165deg,var(--db-bg),#f3f5ec)">
-            <div class="code"><div class="ln2"><span class="cm"># 터미널에 붙여넣기 (xai-... 자리에 내 키)</span>
+            <div class="code"><div class="ln2"><span class="cm"># 터미널에 붙여넣기</span>
 <span class="k">curl</span> https://api.x.ai/v1/chat/completions <span class="p">\</span>
-  -H <span class="s">"Authorization: Bearer xai-..."</span> <span class="p">\</span>
+  -H <span class="s">"Authorization: Bearer </span><span class="tok">xai-...</span><span class="s">"</span> <span class="p">\</span>
   -H <span class="s">"Content-Type: application/json"</span> <span class="p">\</span>
   -d <span class="s">'{"model":"grok-4","messages":[{"role":"user","content":"안녕!"}]}'</span></div></div>
-            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">답이 오면 토큰이 살아있는 것 — 통과!</p>
+            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center"><b style="color:var(--server)">노란 칸(xai-...)</b>에 발급받은 내 토큰을 그대로 붙여넣기 · 답이 오면 통과!</p>
           </div>
           <div class="two-text reveal">
             <div class="deep-kicker">STEP 2 · 확인</div>
@@ -397,15 +398,16 @@
               <div class="pc-head"><span class="pcdot"></span> Claude Code에 이렇게 말하세요</div>
               <pre>ai-service.html 파일을 만들어줘.
 - Grok(xAI) API로 대화하는 챗봇 화면
-- 사용자가 자기 API 토큰을 칸에 넣으면
-  브라우저(localStorage)에만 저장 (BYOK)
+- 지금은 로컬 테스트용. 코드 맨 위에
+  내 토큰을 변수(const MY_KEY)로 넣어
+  바로 동작하게 해줘
 - 질문/답변 말풍선이 있는 채팅 UI
 - api.x.ai의 chat/completions 호출
 - "IT 개념을 일상 비유로 쉽게 풀어주는
   비유 선생님" 말투로
 - 기존 슬라이드와 같은 디자인 톤으로</pre>
             </div>
-            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">말 한마디면 코드가 만들어져요</p>
+            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">먼저 ‘내 토큰’으로 도는 로컬 버전부터</p>
           </div>
         </div>
       </div>
@@ -419,7 +421,7 @@
             <div class="browser">
               <div class="browser-bar"><i style="background:#e7837a"></i><i style="background:#e9c46a"></i><i style="background:#83b07a"></i><span class="url">내 컴퓨터 ▸ ai-service.html</span></div>
               <div class="chat">
-                <div class="key-row"><span class="lk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span class="kv">xai-•••• 붙여넣기</span></div>
+                <div class="key-row"><span class="lk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span class="kv">토큰: 코드에 내장 (로컬 전용)</span></div>
                 <div class="bubble user">안녕? 너는 뭐 하는 애야?</div>
                 <div class="bubble bot">저는 어려운 IT 용어를 일상 비유로 풀어주는 비유 선생님이에요!</div>
               </div>
@@ -429,32 +431,59 @@
           <div class="two-text reveal">
             <div class="deep-kicker">STEP 4 · 로컬 테스트</div>
             <h3>먼저 내 컴퓨터에서<br>확인해 봐요</h3>
-            <p>Claude Code가 만든 <span class="pill">ai-service.html</span>을 더블클릭해 브라우저로 열고, 토큰을 넣어 직접 대화해 봅니다.</p>
-            <p style="color:var(--muted);font-size:14px;margin:0">답이 안 오거나 에러가 나면 Claude Code에게 <b>“이런 에러가 나, 고쳐줘”</b>라고 화면 내용을 그대로 전하면 됩니다. 인터넷에 올리기 전에 여기서 다 잡아요.</p>
+            <p>Claude Code가 만든 <span class="pill">ai-service.html</span>을 더블클릭해 브라우저로 열면, <b>내 토큰이 이미 코드에 들어 있어</b> 바로 대화가 됩니다. <b>내 컴퓨터에서만</b> 돌리는 단계예요.</p>
+            <p style="color:var(--muted);font-size:14px;margin:0">답이 안 오거나 에러가 나면 Claude Code에게 <b>“이런 에러가 나, 고쳐줘”</b>라고 화면 내용을 그대로 전하면 됩니다. 이 파일은 토큰이 들어 있으니 <b>아직 깃허브에 올리면 안 돼요.</b></p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 10. STEP 5-A 깃 연동 -->
+    <!-- 10. 배포 전 · 토큰 숨기기 -->
+    <section class="slide" data-label="토큰 숨기기">
+      <div class="slide-inner">
+        <div class="section-tag mono reveal">BEFORE DEPLOY · 토큰 숨기기</div>
+        <h2 class="sec reveal">배포할 땐 토큰을 어떻게 숨길까?</h2>
+        <p class="sec-lede reveal">솔직히 말할게요. GitHub Pages처럼 ‘화면 코드’만 있는 사이트에선, 토큰을 변수에 넣어도 누구나 <span class="pill">F12</span>로 열어보면 그대로 보입니다. <b>그래서 ‘코드에 토큰 넣고 배포’는 금지.</b> 진짜로 숨기는 방법은 두 가지예요.</p>
+        <div class="safety reveal">
+          <div class="safe-card good">
+            <span class="tag" style="color:var(--client);background:var(--client-bg)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 쉬움 · BYOK</span>
+            <h4>배포본엔 토큰을 아예 안 넣기</h4>
+            <p>배포 버전은 입력칸만 두고, 쓰는 사람이 자기 키를 넣게 합니다. 내 토큰은 인터넷에 안 올라가요. 개인·학습용으로 가장 간단합니다.</p>
+          </div>
+          <div class="safe-card good">
+            <span class="tag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 확실 · 프록시</span>
+            <h4>중계소에 ‘진짜 비밀’로 숨기기</h4>
+            <p>Cloudflare Workers 같은 무료 서버에 내 토큰을 <b>환경변수(진짜 비밀)</b>로 저장합니다. 화면은 그 중계소에 부탁하고, 중계소가 토큰을 붙여 Grok에 요청해요. 토큰이 화면에 안 나오고, 남들도 쓸 수 있죠.</p>
+          </div>
+        </div>
+        <div class="callout tip reveal">
+          <div class="c-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 3h6c0-1 0-2 1-3a7 7 0 0 0-4-12z"/></svg></div>
+          <div><h5>‘변수로 숨기기’가 진짜 통하는 곳</h5><p>환경변수에 숨기는 건 <b>프록시(서버)</b>에서만 통합니다. 정적 사이트에선 안 돼요. 우리는 다음 칸에서 <b>BYOK</b>로 간단히 갈게요. (로컬 테스트용 키가 든 파일은 <span class="pill">.gitignore</span>에 넣어 커밋에서 빼면 됩니다.)</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. STEP 5-A 깃 연동 -->
     <section class="slide" data-label="STEP 5 · 깃 연동">
       <div class="slide-inner">
         <div class="two">
           <div class="two-text reveal">
             <div class="deep-kicker">STEP 5-A · GitHub에 올리기</div>
             <h3>저장소에 연동하고<br>업로드 (프롬프팅)</h3>
-            <p>이것도 Claude Code에게 말로 시키면 됩니다. 내 컴퓨터의 파일을 GitHub 저장소로 올리는 과정이에요.</p>
+            <p>올리기 전에 <b>내 토큰을 빼고 BYOK로 바꾸는 것</b>까지 한 번에 시킵니다. 그래야 키가 인터넷에 노출되지 않아요.</p>
             <p style="color:var(--muted);font-size:14px;margin:0">처음 연결이면 GitHub 로그인·인증을 한 번 물어볼 수 있어요. 시키는 대로 따라가면 됩니다.</p>
           </div>
           <div class="two-visual reveal" style="background:linear-gradient(165deg,var(--server-bg),#faf0ea)">
             <div class="prompt-card">
               <div class="pc-head"><span class="pcdot"></span> Claude Code에 이렇게 말하세요</div>
-              <pre>이 폴더를 내 깃허브 저장소
-github.com/내계정/asanAX 와 연결하고,
-방금 만든 ai-service.html을
-커밋해서 푸시(업로드)해줘.</pre>
+              <pre>이제 배포할 거야.
+코드에 박아둔 내 토큰을 지우고,
+사용자가 자기 키를 입력칸에 넣는
+BYOK 방식으로 바꿔줘.
+그다음 커밋해서 깃허브 저장소
+github.com/내계정/asanAX 에 푸시해줘.</pre>
             </div>
-            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">‘연결 → 커밋 → 푸시’를 한 번에</p>
+            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">‘토큰 빼기 → BYOK 전환 → 푸시’를 한 번에</p>
           </div>
         </div>
       </div>
@@ -528,7 +557,7 @@ github.com/내계정/asanAX 와 연결하고,
   <div class="dots" id="dots"></div>
   <button class="nav-btn" id="next" aria-label="다음 슬라이드"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
 </div>
-<div class="counter"><b id="cur">1</b> / <span id="total">12</span></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">13</span></div>
 <div class="kbd-hint"><span class="kbd">←</span><span class="kbd">→</span><span>방향키 · 스페이스로 이동</span></div>
 
 <script>
