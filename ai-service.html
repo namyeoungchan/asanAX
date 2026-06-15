@@ -209,6 +209,10 @@
   .gh-main .lab { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-family:var(--mono); }
   .gh-select { margin-top:6px; display:flex; align-items:center; justify-content:space-between; border:1px solid var(--server); border-radius:9px; padding:10px 12px; font-weight:700; font-size:13.5px; color:var(--server); background:var(--server-bg); }
   .gh-hint { margin-top:10px; font-size:12px; color:var(--muted); }
+  .gh-field { margin-top:6px; border:1px solid var(--line); border-radius:9px; padding:10px 12px; font-family:var(--mono); font-size:13px; color:var(--ink); background:#fff; }
+  .gh-radio { font-size:12.5px; color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
+  .gh-radio.on { color:var(--server); border-color:var(--server); background:var(--server-bg); font-weight:600; }
+  .gh-create { margin-top:16px; display:inline-block; background:var(--db); color:#fff; font-weight:700; font-size:13px; padding:9px 16px; border-radius:9px; }
 
   svg { display:block; }
 </style>
@@ -234,7 +238,7 @@
         <div class="mini-flow reveal">
           <div class="mf-cell"><span class="n">STEP 1</span><span class="t">토큰 발급</span><span class="d">Grok 출입증 받기</span></div>
           <div class="mf-arrow">→</div>
-          <div class="mf-cell"><span class="n">STEP 2~3</span><span class="t">화면 만들기</span><span class="d">Claude Code로 바이브 코딩</span></div>
+          <div class="mf-cell"><span class="n">STEP 2~3</span><span class="t">화면 만들기</span><span class="d">VS Code + Claude Code</span></div>
           <div class="mf-arrow">→</div>
           <div class="mf-cell"><span class="n">STEP 4~5</span><span class="t">배포</span><span class="d">GitHub Pages 공개</span></div>
         </div>
@@ -333,7 +337,7 @@
           <div class="rm-item"><div class="rm-num">2</div><div class="rm-body"><div class="t">토큰 작동 테스트</div><div class="d">키가 진짜 되는지 한 줄로 확인</div></div></div>
           <div class="rm-item"><div class="rm-num">3</div><div class="rm-body"><div class="t">바이브 코딩으로 화면 만들기</div><div class="d">Claude Code에 프롬프트로 시키기</div></div></div>
           <div class="rm-item"><div class="rm-num">4</div><div class="rm-body"><div class="t">내 컴퓨터에서 테스트</div><div class="d">파일을 열어 실제로 대화해 보기</div></div></div>
-          <div class="rm-item"><div class="rm-num">5</div><div class="rm-body"><div class="t">깃 연동 → Pages 켜기 → 배포</div><div class="d">GitHub Pages 주소에서 실제로 열기</div></div></div>
+          <div class="rm-item"><div class="rm-num">5</div><div class="rm-body"><div class="t">저장소 만들기 → 연결 → 배포</div><div class="d">VS Code에서 GitHub로 올리고 Pages 켜기</div></div></div>
           <div class="rm-item"><div class="rm-num">6</div><div class="rm-body"><div class="t">다듬기 · 개선</div><div class="d">디자인·기능 손보기</div></div></div>
         </div>
       </div>
@@ -363,7 +367,7 @@
       <div class="slide-inner">
         <div class="two flip">
           <div class="two-visual reveal" style="background:linear-gradient(165deg,var(--db-bg),#f3f5ec)">
-            <div class="code"><div class="ln2"><span class="cm"># 터미널에 붙여넣기</span>
+            <div class="code"><div class="ln2"><span class="cm"># VS Code 아래쪽 터미널에 붙여넣기</span>
 <span class="k">curl</span> https://api.x.ai/v1/chat/completions <span class="p">\</span>
   -H <span class="s">"Authorization: Bearer </span><span class="tok">xai-...</span><span class="s">"</span> <span class="p">\</span>
   -H <span class="s">"Content-Type: application/json"</span> <span class="p">\</span>
@@ -373,7 +377,7 @@
           <div class="two-text reveal">
             <div class="deep-kicker">STEP 2 · 확인</div>
             <h3>토큰이 진짜 되는지<br>한 줄로 테스트</h3>
-            <p>화면을 만들기 전에, 발급한 키가 동작하는지 먼저 확인합니다. 왼쪽 명령을 터미널에 붙여넣어 답장이 오면 끝.</p>
+            <p>화면을 만들기 전에, 발급한 키가 동작하는지 먼저 확인합니다. 왼쪽 명령을 <b>VS Code 아래쪽 터미널</b>(Ctrl+`)에 붙여넣어 답장이 오면 끝.</p>
             <p style="color:var(--muted);font-size:14px;margin:0">터미널이 낯설면 이 단계는 건너뛰고 바로 화면(3단계)에서 확인해도 돼요. <span class="pill">model</span> 이름은 콘솔의 ‘사용 가능한 모델’에서 확인해 맞춰줍니다.</p>
           </div>
         </div>
@@ -387,7 +391,7 @@
           <div class="two-text reveal">
             <div class="deep-kicker">STEP 3 · 바이브 코딩</div>
             <h3>Claude Code에게<br>말로 시켜서 만들기</h3>
-            <p>직접 코딩하지 않아요. <b>Claude Code(클로드 코드)</b>에게 “이런 거 만들어줘”라고 말하면 코드를 대신 써줍니다. 이게 바이브 코딩이에요.</p>
+            <p>직접 코딩하지 않아요. <b>VS Code</b>를 열고 <b>Claude Code(클로드 코드)</b>에게 “이런 거 만들어줘”라고 말하면 코드를 대신 써줍니다. 이게 바이브 코딩이에요.</p>
             <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px">
               <li style="display:flex;gap:11px;font-size:14.5px;color:var(--ink-soft)"><span class="pill">1</span> 무엇을 만들지 <b style="color:var(--ink)">말로 설명</b></li>
               <li style="display:flex;gap:11px;font-size:14.5px;color:var(--ink-soft)"><span class="pill">2</span> Claude Code가 <b style="color:var(--ink)">코드 작성</b></li>
@@ -490,27 +494,63 @@
       </div>
     </section>
 
-    <!-- 12. STEP 5-A 깃 연동 -->
-    <section class="slide" data-label="STEP 5 · 깃 연동">
+    <!-- 12. STEP 5-A 저장소 만들기 -->
+    <section class="slide" data-label="STEP 5 · 저장소 만들기">
+      <div class="slide-inner">
+        <div class="section-tag mono reveal">STEP 5-A · 저장소 만들기</div>
+        <h2 class="sec reveal">GitHub에 빈 저장소(레포) 만들기</h2>
+        <p class="sec-lede reveal">내 코드를 올려둘 ‘창고’를 GitHub에 하나 만듭니다. 웹에서 클릭 몇 번이면 끝나요. (저장소 = 레포 = repository, 다 같은 말이에요.)</p>
+        <div class="two" style="margin-top:18px">
+          <div class="two-visual reveal" style="background:linear-gradient(165deg,#f1eee9,#fbf8f3)">
+            <div class="gh-mock">
+              <div class="gh-top"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> github.com · Create a new repository</div>
+              <div class="gh-main">
+                <div class="ttl">Create a new repository</div>
+                <div class="lab">Repository name *</div>
+                <div class="gh-field">asanAX</div>
+                <div style="display:flex;gap:10px;margin-top:14px">
+                  <div class="gh-radio on">Public</div>
+                  <div class="gh-radio">Private</div>
+                </div>
+                <div class="gh-create">Create repository</div>
+              </div>
+            </div>
+          </div>
+          <div class="two-text reveal">
+            <ol class="steps">
+              <li><span class="st-body">github.com 오른쪽 위 <span class="pill">+</span> → <span class="pill">New repository</span></span></li>
+              <li><span class="st-body"><b>Repository name</b>에 이름 입력 (예: <span class="pill">asanAX</span>)</span></li>
+              <li><span class="st-body"><span class="pill">Public</span> 선택 — GitHub Pages 무료 공개에 필요</span></li>
+              <li><span class="st-body">초록색 <span class="pill">Create repository</span> 클릭</span></li>
+              <li><span class="st-body">만들어진 주소 <span class="pill">github.com/내계정/asanAX</span> 기억(복사)</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. STEP 5-B 프롬프트로 연결 -->
+    <section class="slide" data-label="STEP 5 · 연결">
       <div class="slide-inner">
         <div class="two">
           <div class="two-text reveal">
-            <div class="deep-kicker">STEP 5-A · GitHub에 올리기</div>
-            <h3>저장소에 연동하고<br>업로드 (프롬프팅)</h3>
-            <p>올리기 전에 <b>내 토큰을 빼고 BYOK로 바꾸는 것</b>까지 한 번에 시킵니다. 그래야 키가 인터넷에 노출되지 않아요.</p>
+            <div class="deep-kicker">STEP 5-B · 프롬프트로 연결</div>
+            <h3>방금 만든 저장소와<br>연결하고 올리기</h3>
+            <p><b>VS Code</b>에서 Claude Code에게 말로 시킵니다. <b>방금 만든 저장소와 연결</b>하고, 토큰을 빼고 BYOK로 바꾼 뒤 푸시하는 것까지 한 번에요.</p>
             <p style="color:var(--muted);font-size:14px;margin:0">처음 연결이면 GitHub 로그인·인증을 한 번 물어볼 수 있어요. 시키는 대로 따라가면 됩니다.</p>
           </div>
           <div class="two-visual reveal" style="background:linear-gradient(165deg,var(--server-bg),#faf0ea)">
             <div class="prompt-card">
               <div class="pc-head"><span class="pcdot"></span> Claude Code에 이렇게 말하세요</div>
-              <pre>이제 배포할 거야.
-코드에 박아둔 내 토큰을 지우고,
-사용자가 자기 키를 입력칸에 넣는
-BYOK 방식으로 바꿔줘.
-그다음 커밋해서 깃허브 저장소
-github.com/내계정/asanAX 에 푸시해줘.</pre>
+              <pre>방금 만든 깃허브 저장소
+github.com/내계정/asanAX 와
+이 폴더(VS Code)를 연결해줘.
+그리고 배포 전이니 코드에 박아둔
+내 토큰을 지우고, 사용자가 자기 키를
+입력칸에 넣는 BYOK로 바꿔줘.
+그다음 커밋해서 푸시(업로드)해줘.</pre>
             </div>
-            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">‘토큰 빼기 → BYOK 전환 → 푸시’를 한 번에</p>
+            <p style="margin:0;font-size:13px;color:var(--ink-soft);text-align:center">‘연결 → 토큰 빼기 → BYOK → 푸시’를 한 번에</p>
           </div>
         </div>
       </div>
@@ -519,7 +559,7 @@ github.com/내계정/asanAX 에 푸시해줘.</pre>
     <!-- 11. STEP 5-B Pages 켜기 -->
     <section class="slide" data-label="STEP 5 · Pages 켜기">
       <div class="slide-inner">
-        <div class="section-tag mono reveal">STEP 5-B · 페이지 활성화</div>
+        <div class="section-tag mono reveal">STEP 5-C · 페이지 활성화</div>
         <h2 class="sec reveal">GitHub Pages 켜기 (한 번만)</h2>
         <p class="sec-lede reveal">올린 파일을 인터넷 주소로 공개하려면, 저장소 설정에서 Pages를 한 번 켜주면 됩니다. 아래 화면 그대로 따라오세요.</p>
         <div class="two" style="margin-top:18px">
@@ -584,7 +624,7 @@ github.com/내계정/asanAX 에 푸시해줘.</pre>
   <div class="dots" id="dots"></div>
   <button class="nav-btn" id="next" aria-label="다음 슬라이드"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
 </div>
-<div class="counter"><b id="cur">1</b> / <span id="total">14</span></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">15</span></div>
 <div class="kbd-hint"><span class="kbd">←</span><span class="kbd">→</span><span>방향키 · 스페이스로 이동</span></div>
 
 <script>
