@@ -1,0 +1,14 @@
+# 로컬 전용 강의 대본 (저장소에 푸시하지 않음)
+talk-track/
+
+# Claude Code 로컬 설정
+.claude/settings.local.json
+
+# 설치된 플러그인 스킬은 추적하지 않고, 직접 만든 스킬만 커밋
+.claude/skills/*
+!.claude/skills/doc-analyzer/
+!.claude/skills/image-to-html/
+
+# 미리보기/임시
+*.tmp
+_slides.html

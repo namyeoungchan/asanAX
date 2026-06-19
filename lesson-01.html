@@ -102,11 +102,12 @@
 
   .section-tag { font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: .04em; display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .section-tag::before { content:""; width: 28px; height: 1px; background: var(--muted); }
-  h2.sec { font-size: clamp(1.8rem, 4.4vw, 2.7rem); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; margin: 0 0 16px; max-width: 20ch; }
+  h2.sec { font-size: clamp(1.8rem, 4.4vw, 2.7rem); line-height: 1.12; letter-spacing: -0.035em; font-weight: 800; margin: 0 0 16px; max-width: 26ch; }
   .sec-lede { font-size: 1.06rem; color: var(--ink-soft); max-width: 60ch; margin: 0; }
 
   /* ---------- 표지 ---------- */
-  h1.title { font-size: clamp(2.3rem, 6.6vw, 4.4rem); line-height: 1.0; letter-spacing: -0.04em; font-weight: 800; margin: 0 0 22px; max-width: 17ch; }
+  h1.title { font-size: clamp(2.1rem, 5.6vw, 3.9rem); line-height: 1.08; letter-spacing: -0.04em; font-weight: 800; margin: 0 0 22px; max-width: 28ch; }
+  h1.title .tline { display: block; }
   h1.title .hl { position: relative; white-space: nowrap; }
   h1.title .hl::after { content:""; position:absolute; left:-2px; right:-2px; bottom: 0.08em; height: 0.34em; background: var(--server-bg); z-index:-1; border-radius: 3px; transform: rotate(-0.6deg); }
   .lede { font-size: clamp(1.02rem, 2.3vw, 1.25rem); color: var(--ink-soft); max-width: 52ch; margin: 0 0 36px; }
@@ -263,8 +264,8 @@
     <section class="slide" data-label="표지">
       <div class="slide-inner">
         <span class="eyebrow reveal"><span class="pulse"></span> 01 · IT 기초 / 코드 한 줄 몰라도 OK</span>
-        <h1 class="title reveal">버튼을 눌렀더니 화면이 바뀌는 일,<br>사실은 <span class="hl">식당에서 주문</span>하는 것과 같아요</h1>
-        <p class="lede reveal">‘클라이언트’, ‘서버’, ‘데이터베이스’. 개발 이야기에 꼭 나오는 세 단어를, 우리가 매일 가는 식당 한 곳으로 끝까지 풀어봅니다.</p>
+        <h1 class="title reveal"><span class="tline">버튼을 눌렀더니 화면이 바뀌는 일,</span><span class="tline">사실은 <span class="hl">식당에서 주문</span>하는 것과 같아요</span></h1>
+        <p class="lede reveal">‘클라이언트’, ‘서버’, ‘데이터베이스’.<br>개발 이야기에 꼭 나오는 세 단어를,<br>우리가 매일 가는 식당 한 곳으로 끝까지 풀어봅니다.</p>
         <div class="hero-strip reveal">
           <div class="strip-cell c-client"><span class="role">손님</span><span class="who">클라이언트</span><span class="desc">주문하고 음식을 받는 쪽</span></div>
           <div class="strip-arrow">→</div>
@@ -284,7 +285,7 @@
       <div class="slide-inner">
         <div class="section-tag mono reveal">THE ANALOGY</div>
         <h2 class="sec reveal">하나의 식당 안에 세 명의 주인공이 있습니다</h2>
-        <p class="sec-lede reveal">웹사이트와 앱이 돌아가는 원리는 잘 굴러가는 식당의 ‘역할 분담’과 똑같아요. 셋이 손발을 맞춰야 음식 한 접시가 나옵니다.</p>
+        <p class="sec-lede reveal">웹사이트와 앱이 돌아가는 원리는 잘 굴러가는 식당의 ‘역할 분담’과 똑같아요.<br>셋이 손발을 맞춰야 음식 한 접시가 나옵니다.</p>
         <div class="reveal">
           <div class="scene-head">
             <h3>라멘집 ‘목요일의 국물’</h3>
@@ -321,7 +322,7 @@
           <div class="deep-text reveal">
             <div class="deep-kicker c-client-k">CLIENT · 손님</div>
             <h3>클라이언트는<br>‘내 눈에 보이는 모든 것’입니다</h3>
-            <p>지금 보고 있는 이 화면, 인스타그램 앱, 카카오톡 채팅창. 손가락으로 만지고 눈으로 보는 부분 전부가 클라이언트예요. 식당의 ‘손님 자리’입니다.</p>
+            <p>지금 보고 있는 이 화면, 인스타그램 앱, 카카오톡 채팅창.<br>손가락으로 만지고 눈으로 보는 부분 전부가 클라이언트예요.<br>식당의 ‘손님 자리’입니다.</p>
             <ul>
               <li><span class="tick" style="background:var(--client-bg);color:var(--client)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>웹 브라우저(크롬·사파리)나 휴대폰 앱이 바로 클라이언트.</li>
               <li><span class="tick" style="background:var(--client-bg);color:var(--client)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>‘좋아요’를 누르는 행동 = 주방에 보내는 <b>주문(요청)</b>.</li>
@@ -359,7 +360,7 @@
           <div class="deep-text reveal">
             <div class="deep-kicker c-server-k">SERVER · 주방</div>
             <h3>서버는<br>‘보이지 않는 곳에서 일하는 주방’</h3>
-            <p>손님 눈엔 안 보이지만 모든 진짜 일은 여기서 일어납니다. 주문을 받고, 규칙대로 처리하고, 창고를 뒤져 결과를 만들어 손님에게 내보내죠. 24시간 불이 꺼지지 않는 컴퓨터입니다.</p>
+            <p>손님 눈엔 안 보이지만 모든 진짜 일은 여기서 일어납니다.<br>주문을 받고, 규칙대로 처리하고, 창고를 뒤져 결과를 만들어 손님에게 내보내죠.<br>24시간 불이 꺼지지 않는 컴퓨터입니다.</p>
             <ul>
               <li><span class="tick" style="background:var(--server-bg);color:var(--server)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>항상 켜져 있는 <b>강력한 컴퓨터</b>. 내 노트북이 꺼져도 돌아가요.</li>
               <li><span class="tick" style="background:var(--server-bg);color:var(--server)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>‘좋아요 1개 더해라’ 같은 <b>규칙·계산</b>을 처리하는 두뇌.</li>
@@ -377,7 +378,7 @@
           <div class="deep-text reveal">
             <div class="deep-kicker c-db-k">DATABASE · 창고</div>
             <h3>데이터베이스는<br>‘잘 정리된 거대한 창고’</h3>
-            <p>회원 정보, 올린 사진, 좋아요 숫자, 주고받은 메시지. 사라지면 안 되는 모든 것이 여기 보관됩니다. 그냥 쌓는 게 아니라 ‘게시글 88번 가져와’처럼 빠르게 찾을 수 있게 칸칸이 정리돼 있어요.</p>
+            <p>회원 정보, 올린 사진, 좋아요 숫자, 주고받은 메시지.<br>사라지면 안 되는 모든 것이 여기 보관됩니다.<br>그냥 쌓는 게 아니라 ‘게시글 88번 가져와’처럼 빠르게 찾을 수 있게 칸칸이 정리돼 있어요.</p>
             <ul>
               <li><span class="tick" style="background:var(--db-bg);color:var(--db)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>전원이 꺼져도 <b>데이터가 남아있는</b> 영구 보관소.</li>
               <li><span class="tick" style="background:var(--db-bg);color:var(--db)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span>엑셀 표처럼 <b>줄과 칸</b>으로 정리돼 빠르게 찾습니다.</li>
@@ -404,7 +405,7 @@
       <div class="slide-inner">
         <div class="section-tag mono reveal">THE FULL JOURNEY</div>
         <h2 class="sec reveal">‘좋아요’ 한 번에 셋이 함께 움직입니다</h2>
-        <p class="sec-lede reveal">아래 버튼을 눌러보세요. 주문서가 손님 → 주방 → 창고를 거쳐 다시 돌아오는 과정을 직접 따라가 볼 수 있어요.</p>
+        <p class="sec-lede reveal">아래 버튼을 눌러보세요.<br>주문서가 손님 → 주방 → 창고를 거쳐 다시 돌아오는 과정을 직접 따라가 볼 수 있어요.</p>
         <div class="flow-wrap reveal">
           <div class="flow-stage" id="stage">
             <div class="packet" id="packet"></div>
@@ -479,7 +480,7 @@
         <div class="end-card">
           <div class="badge reveal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 01화 완료</div>
           <h2 class="reveal">이제 ‘클라이언트·서버·DB’가<br>한 식당으로 보이시나요?</h2>
-          <p class="reveal">손님이 주문하고, 주방이 처리하고, 창고가 보관한다. 이 한 문장만 기억하면 개발 대화의 절반은 따라갈 수 있어요.</p>
+          <p class="reveal">손님이 주문하고, 주방이 처리하고, 창고가 보관한다.<br>이 한 문장만 기억하면 개발 대화의 절반은 따라갈 수 있어요.</p>
           <button class="btn btn-primary restart reveal" id="restart"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/></svg>처음부터 다시 보기</button>
         </div>
       </div>
