@@ -143,7 +143,7 @@
   .two-visual { border-radius:24px; padding:28px; border:1px solid var(--line); box-shadow:var(--shadow-card); background:linear-gradient(165deg, var(--server-bg), #faf0ea); display:flex; flex-direction:column; gap:14px; }
 
   /* 코드 블록 */
-  .code { background:#211f1c; border-radius:14px; padding:18px; font-family:var(--mono); font-size:12.5px; line-height:1.7; color:#e9e3d8; box-shadow:var(--shadow-soft); overflow-x:auto; }
+  .code { background:#211f1c; border-radius:14px; padding:18px; font-family:var(--mono); font-size:12.5px; line-height:1.7; color:#e9e3d8; box-shadow:var(--shadow-soft); overflow-x:auto; white-space:pre-wrap; word-break:break-word; }
   .code .cm { color:#6f675c; } .code .k { color:#e08a5f; } .code .s { color:#9bbf7a; } .code .p { color:#7fb0bd; }
   .code .tok { background:rgba(224,138,95,.28); color:#ffd9c4; border-radius:5px; padding:1px 6px; font-weight:700; box-shadow:0 0 0 1px rgba(224,138,95,.55); }
   .code .ln2 { white-space:pre; }
@@ -248,6 +248,20 @@
   .wf-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
   .wf-tags span { font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:7px; background:var(--line-soft); border:1px solid var(--line); color:var(--ink-soft); }
   .wf-tags span.hl { background:var(--server-bg); border-color:#e0b9a8; color:var(--server); font-weight:700; }
+
+  /* 세로 파이프라인 체인 */
+  .pipe { display:flex; flex-direction:column; gap:0; }
+  .pipe-node { border:1px solid var(--line); border-radius:14px; background:var(--bg-soft); padding:13px 16px; box-shadow:var(--shadow-soft); display:flex; align-items:center; gap:13px; }
+  .pipe-node .pn-ico { width:36px; height:36px; border-radius:10px; flex:none; display:grid; place-items:center; font-size:13px; }
+  .pipe-node.io .pn-ico { background:var(--line-soft); color:var(--ink-soft); }
+  .pipe-node.sk .pn-ico { background:var(--client-bg); color:var(--client); }
+  .pipe-node.ag .pn-ico { background:var(--server-bg); color:var(--server); }
+  .pipe-node.mc .pn-ico { background:var(--db-bg); color:var(--db); }
+  .pipe-node .pn-lab { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.03em; }
+  .pipe-node.sk .pn-lab { color:var(--client); } .pipe-node.ag .pn-lab { color:var(--server); } .pipe-node.mc .pn-lab { color:var(--db); } .pipe-node.io .pn-lab { color:var(--muted); }
+  .pipe-node .pn-t { font-weight:700; font-size:14px; letter-spacing:-0.02em; }
+  .pipe-node .pn-d { font-size:11.5px; color:var(--muted); }
+  .pipe-arrow-v { display:grid; place-items:center; color:var(--muted); height:20px; }
 
   svg { display:block; }
 </style>
@@ -404,7 +418,70 @@
       </div>
     </section>
 
-    <!-- 5. 실전 스킬 예시 (이 강의에 들어있는 스킬) -->
+    <!-- 5. hooks 자동화 -->
+    <section class="slide" data-label="hooks">
+      <div class="slide-inner">
+        <div class="section-tag mono reveal">AUTOMATION · /hooks</div>
+        <h2 class="sec reveal">hooks: “이 일이 생기면, 자동으로 해라”</h2>
+        <p class="sec-lede reveal">
+          스킬·에이전트는 <b>내가 말해야</b> 움직였죠.<br>
+          hooks는 정해둔 사건이 생기면 <b>사람 없이 저절로</b> 실행되는 규칙이에요.<br>
+          현관 센서등처럼 — 누가 들어오면(이벤트) 불이 켜집니다(자동 동작).
+        </p>
+        <div class="roadmap reveal" style="margin-top:12px">
+          <div class="rm-item">
+            <div class="rm-num" style="font-size:13px">전</div>
+            <div class="rm-body">
+              <div class="t">작업 <b>전</b>에 — <span class="pill">PreToolUse</span></div>
+              <div class="d">위험한 동작을 막거나 미리 점검. 예: 민감한 파일을 건드리면 경고하고 멈추기.</div>
+            </div>
+          </div>
+          <div class="rm-item">
+            <div class="rm-num" style="font-size:13px">후</div>
+            <div class="rm-body">
+              <div class="t">작업 <b>후</b>에 — <span class="pill">PostToolUse</span></div>
+              <div class="d">파일을 고치면 자동으로 정리. 예: 코드가 저장되면 자동 포맷·자동 테스트 실행.</div>
+            </div>
+          </div>
+          <div class="rm-item">
+            <div class="rm-num" style="font-size:13px">끝</div>
+            <div class="rm-body">
+              <div class="t">대화가 <b>끝났을 때</b> — <span class="pill">Stop</span></div>
+              <div class="d">마무리 동작. 예: 작업이 끝나면 완료 알림을 띄우거나 결과를 기록하기.</div>
+            </div>
+          </div>
+        </div>
+        <div class="two" style="margin-top:18px;grid-template-columns:1fr 1fr;gap:24px">
+          <div class="two-visual reveal" style="background:linear-gradient(165deg,var(--server-bg),#faf0ea);padding:20px">
+            <div class="code" style="font-size:11.5px"><span class="cm"># 터미널에 입력하면 설정 화면이 열려요</span>
+<span class="tok">/hooks</span>
+
+<span class="cm"># 저장된 모습(.claude/settings.json)</span>
+<span class="cm"># — 직접 손으로 짤 필요는 없어요</span>
+<span class="p">"PostToolUse"</span>: [{ <span class="p">"matcher"</span>: <span class="s">"Edit"</span>,
+  <span class="p">"hooks"</span>: [{ <span class="p">"command"</span>:
+    <span class="s">"prettier --write"</span> }] }]</div>
+          </div>
+          <div class="two-text reveal" style="display:flex;flex-direction:column;justify-content:center">
+            <div class="deep-kicker">어떻게 만드나</div>
+            <p style="margin:0 0 12px">
+              터미널에 <span class="pill">/hooks</span>를 입력하면 설정 화면이 열려요.<br>
+              ‘언제(이벤트)’와 ‘무엇을 실행할지(명령)’만 고르면 끝입니다.
+            </p>
+            <p style="margin:0;color:var(--muted);font-size:14px">
+              한 번 등록하면, 그 사건이 생길 때마다<br>
+              내가 시키지 않아도 알아서 돌아갑니다.
+            </p>
+          </div>
+        </div>
+        <div class="callout tip reveal">
+          <div class="c-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 3h6c0-1 0-2 1-3a7 7 0 0 0-4-12z"/></svg></div>
+          <div><h5>스킬 vs hooks — 헷갈리지 마세요</h5><p><b>스킬</b>은 ‘어떻게 하는지(방법)’, <b>hooks</b>는 ‘언제 저절로 시작되는지(타이밍)’예요. 둘을 합치면 hooks가 <b>스킬·파이프라인을 자동으로 켜는 방아쇠</b>가 됩니다 — 그래서 ‘무인 자동화’의 출발점이에요.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 실전 스킬 예시 (이 강의에 들어있는 스킬) -->
     <section class="slide" data-label="실전 스킬">
       <div class="slide-inner">
         <div class="section-tag mono reveal">REAL SKILLS · 이 강의 폴더에 진짜로 들어있어요</div>
@@ -653,7 +730,113 @@
       </div>
     </section>
 
-    <!-- 9. 현업 팁 -->
+    <!-- 9. 스킬 파이프라인 (개념) -->
+    <section class="slide" data-label="파이프라인">
+      <div class="slide-inner">
+        <div class="two">
+          <div class="two-text reveal">
+            <div class="deep-kicker">PIPELINE · 스킬을 이어 붙이기</div>
+            <h3>스킬을 이어 붙이면<br>‘파이프라인’이 됩니다</h3>
+            <p>
+              한 동작의 <b>출력</b>을 다음 동작의 <b>입력</b>으로 넘기면,<br>
+              여러 스킬이 하나의 흐름(파이프라인)으로 이어져요.<br>
+              엮는 방법은 크게 세 가지입니다.
+            </p>
+            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px">
+              <li style="display:flex;gap:11px;font-size:14px;color:var(--ink-soft)"><span class="pill">1</span> <span><b style="color:var(--ink)">한 스킬 안에서</b> — image-to-html은 이미 ‘로드→격자→팔레트→HTML’ 내부 파이프라인.</span></li>
+              <li style="display:flex;gap:11px;font-size:14px;color:var(--ink-soft)"><span class="pill">2</span> <span><b style="color:var(--ink)">스킬을 조합</b> — 한 스킬의 결과를 다음 스킬로. Claude가 순서를 지휘.</span></li>
+              <li style="display:flex;gap:11px;font-size:14px;color:var(--ink-soft)"><span class="pill">3</span> <span><b style="color:var(--ink)">CLI 체이닝</b> — <span class="pill">--json</span> 출력을 다음 도구의 입력으로 파이프(<span class="pill">|</span>).</span></li>
+            </ul>
+            <div class="callout tip" style="margin-top:20px">
+              <div class="c-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/></svg></div>
+              <div><h5>사람 없이 자동으로 돌리려면</h5><p><span class="pill">hooks</span>(파일 저장 등 이벤트 트리거)나 <span class="pill">/schedule</span>·<span class="pill">/loop</span>(주기 실행)를 얹으면 ‘매일 아침 문서 분석→노션 리포트’ 같은 무인 파이프라인이 됩니다.</p></div>
+            </div>
+          </div>
+          <div class="two-visual reveal" style="background:linear-gradient(165deg,var(--db-bg),#f3f5ec)">
+            <div class="pipe">
+              <div class="pipe-node io">
+                <div class="pn-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 3v5h5"/><path d="M7 3h8l4 4v14H7z"/></svg></div>
+                <div><div class="pn-lab">INPUT · 입력</div><div class="pn-t">보고서.md + chart.png</div></div>
+              </div>
+              <div class="pipe-arrow-v"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
+              <div class="pipe-node sk">
+                <div class="pn-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 4h16v4H4z"/><path d="M4 12h16v8H4z"/></svg></div>
+                <div><div class="pn-lab">SKILL · doc-analyzer</div><div class="pn-t">문서 구조 분석</div><div class="pn-d">→ 분량·목차 JSON</div></div>
+              </div>
+              <div class="pipe-arrow-v"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
+              <div class="pipe-node sk">
+                <div class="pn-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>
+                <div><div class="pn-lab">SKILL · image-to-html</div><div class="pn-t">차트 색 미리보기</div><div class="pn-d">→ 팔레트 HTML</div></div>
+              </div>
+              <div class="pipe-arrow-v"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
+              <div class="pipe-node ag">
+                <div class="pn-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+                <div><div class="pn-lab">AGENT · Claude</div><div class="pn-t">결과 묶어 요약</div></div>
+              </div>
+              <div class="pipe-arrow-v"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
+              <div class="pipe-node mc">
+                <div class="pn-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h6M9 11h6"/></svg></div>
+                <div><div class="pn-lab">MCP · Notion</div><div class="pn-t">점검 리포트 페이지</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. 파이프라인 구현 실습 -->
+    <section class="slide" data-label="파이프라인 실습">
+      <div class="slide-inner">
+        <div class="section-tag mono reveal">HANDS-ON · 직접 엮어보기</div>
+        <h2 class="sec reveal">실습: ‘보고서 점검’ 파이프라인 만들기</h2>
+        <p class="sec-lede reveal">
+          앞의 그림을 그대로 손으로 돌려봅니다.<br>
+          준비물은 문서 하나(<span class="pill">보고서.md</span>)와 이미지 하나(<span class="pill">chart.png</span>)면 충분해요.<br>
+          각 단계는 ‘직접 명령’으로도, ‘말로 시키기’로도 할 수 있습니다.
+        </p>
+        <div class="roadmap reveal" style="margin-top:12px">
+          <div class="rm-item">
+            <div class="rm-num">1</div>
+            <div class="rm-body">
+              <div class="t">문서 구조 분석 → JSON으로 받기</div>
+              <div class="d" style="margin:4px 0 7px">분량·목차·표 개수를 기계가 읽기 좋은 형태로 뽑습니다. <span class="pill">--json</span>이 다음 단계로 넘기는 연결고리예요.</div>
+              <div class="code" style="font-size:11.5px"><span class="cm"># 직접:</span> <span class="k">python</span> .claude/skills/doc-analyzer/analyze.py 보고서.md <span class="tok">--json</span>
+<span class="cm"># 말로:</span> <span class="s">"보고서.md 구조를 분석해서 결과를 정리해둬"</span></div>
+            </div>
+          </div>
+          <div class="rm-item">
+            <div class="rm-num">2</div>
+            <div class="rm-body">
+              <div class="t">첨부 이미지 → 색 미리보기 HTML</div>
+              <div class="d" style="margin:4px 0 7px">차트 이미지를 픽셀 분석해 팔레트·모자이크 HTML로. 리포트에 시각 요약으로 붙일 조각입니다.</div>
+              <div class="code" style="font-size:11.5px"><span class="cm"># 직접:</span> <span class="k">python</span> .claude/skills/image-to-html/convert.py chart.png <span class="p">-o</span> chart.html
+<span class="cm"># 말로:</span> <span class="s">"chart.png를 색 미리보기 HTML로 바꿔줘"</span></div>
+            </div>
+          </div>
+          <div class="rm-item">
+            <div class="rm-num">3</div>
+            <div class="rm-body">
+              <div class="t">결과 묶어 요약 (에이전트)</div>
+              <div class="d">1·2의 출력(JSON·HTML)을 Claude가 받아 ‘분량 OK인지, 빠진 섹션은 없는지’ 한 단락으로 정리.</div>
+            </div>
+          </div>
+          <div class="rm-item">
+            <div class="rm-num">4</div>
+            <div class="rm-body">
+              <div class="t">노션에 점검 리포트 남기기 (MCP)</div>
+              <div class="d">묶은 요약을 노션 페이지로. 여기까지가 한 번에 도는 파이프라인이에요.</div>
+              <div class="wf-tags"><span class="hl">Notion MCP</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout tip reveal">
+          <div class="c-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 3h6c0-1 0-2 1-3a7 7 0 0 0-4-12z"/></svg></div>
+          <div><h5>한 문장으로 통째로 시켜도 됩니다</h5><p><span class="pill">“보고서.md랑 chart.png로 점검 파이프라인 돌려서, 분석·색 미리보기·요약을 노션에 정리해줘”</span> — Claude가 1→4 단계를 순서대로 엮어 실행합니다. 막히는 단계만 따로 직접 명령으로 확인하면 돼요.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. 현업 팁 -->
     <section class="slide" data-label="현업 팁">
       <div class="slide-inner">
         <div class="section-tag mono reveal">PRO TIPS · 헷갈리기 쉬운 점</div>
@@ -719,7 +902,7 @@
   <div class="dots" id="dots"></div>
   <button class="nav-btn" id="next" aria-label="다음 슬라이드"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
 </div>
-<div class="counter"><b id="cur">1</b> / <span id="total">12</span></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">15</span></div>
 <div class="kbd-hint"><span class="kbd">←</span><span class="kbd">→</span><span>방향키 · 스페이스로 이동</span></div>
 
 <script>
